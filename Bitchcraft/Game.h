@@ -1,7 +1,7 @@
-//version: 0.1
-
 #ifndef BITCHCRAFT_GAME_inc
 #define BITCHCRAFT_GAME_inc
+
+//version: 0.1
 
 #if !defined(BITCHCRAFT_V0_1r) && !defined(BITCHCRAFT_V0_1d)
 #error Bitchcraft: Game.h: Incorrect Version, required: 0.1
@@ -21,49 +21,23 @@ namespace Bitchcraft
 		DllExport Game(const char *title, int width = 640, int height = 480);
 		DllExport ~Game();
 
-		DllExport void run();
+		DllImport virtual void run();
 
-		DllExport void draw(float gameTime, float deltaTime);
+		DllImport virtual void draw(float gameTime, float deltaTime) = 0;
 
-		DllExport void update(float gameTime, float deltaTime);
+		DllImport virtual void update(float gameTime, float deltaTime) = 0;
 
-		DllExport void damage();
+		DllImport virtual void damage(float h) = 0;
 
-		DllExport void score();
-	private:
+		DllImport virtual void score(int p) = 0;
+
+	protected:
 		sf::RenderWindow *mWind;
 		sf::Clock *mClk;
 
-		sf::Vector2f mPos;
-
-		sf::Vector2f tPos;
-
-		float crot;
-
-		struct projp;
-
-		typedef struct projp
-		{
-			sf::Vector2f pos;
-			float age;
-			sf::Vector2f vel;
-
-			static projp create(float x, float y, float vx, float vy)
-			{
-				projp p;
-				p.pos.x = x;
-				p.pos.y = y;
-				p.age = 0;
-				p.vel.x = vx;
-				p.vel.y = vy;
-				return p;
-			}
-		} proj;
-
-		std::vector<sf::Vector2f> en;
-		std::vector<proj> pr;
-
 		sf::Font font;
+
+		sf::Vector2f mPos;
 
 		float health;
 		int points;

@@ -28,8 +28,6 @@ Bitchcraft::Game::Game(const char *title, int width, int height)
 
 	mClk = new sf::Clock();
 
-	tPos = sf::Vector2f(320, 240);
-
 	font.loadFromFile("arial.ttf");
 
 	mWind->setMouseCursorVisible(false);
@@ -69,7 +67,7 @@ void Bitchcraft::Game::run()
 	}
 }
 
-void Bitchcraft::Game::draw(float gameTime, float deltaTime)
+/*void Bitchcraft::Game::draw(float gameTime, float deltaTime)
 {
 	if (health > 0)
 	{
@@ -326,4 +324,4 @@ void Bitchcraft::Game::damage()
 void Bitchcraft::Game::score()
 {
 	points += 10;
-}
+}*/
