@@ -1,75 +1,21 @@
-#if !defined(BITCHCRAFT_V0_1r) && !defined(BITCHCRAFT_V0_1d)
-#error Bitchcraft: Game.h: Incorrect Version, required: 0.1
-#endif
-
-#include "Game.h"
-
-#include <SFML/Graphics.hpp>
-
-#include <iostream>
+#include <Game.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <vector>
 
-Bitchcraft::Game::Game(const char *title, int width, int height)
+#include "BtZS_Game.h"
+
+void BtZS::run()
 {
-	sf::ContextSettings cx;
-	cx.antialiasingLevel = 8;
-
-	int mHeight = 480;
-	int mWidth = 640;
-	std::string mTitle(title);
-
-	health = 100;
-	points = 0;
-
-	mWind = new sf::RenderWindow(sf::VideoMode(mWidth, mHeight), mTitle, sf::Style::Close, cx);
-
-	mClk = new sf::Clock();
-
 	tPos = sf::Vector2f(320, 240);
-
-	font.loadFromFile("arial.ttf");
-
-	mWind->setMouseCursorVisible(false);
+	Bitchcraft::Game::run();
 }
 
-Bitchcraft::Game::~Game()
-{
+float fps;
+float otf = 0;
 
-}
-
-void Bitchcraft::Game::run()
-{
-	float time = mClk->getElapsedTime().asSeconds();
-	float deltaTime;
-
-	while (mWind->isOpen())
-	{
-		sf::Event cevent;
-		while (mWind->pollEvent(cevent))
-		{
-			if (cevent.type == sf::Event::Closed)
-				mWind->close();
-			else if (cevent.type == sf::Event::MouseMoved)
-				mPos = sf::Vector2f(cevent.mouseMove.x, cevent.mouseMove.y);
-		}
-
-		mWind->clear(sf::Color::Black);
-
-		deltaTime = mClk->getElapsedTime().asSeconds() - time;
-		time = mClk->getElapsedTime().asSeconds();
-
-		update(time, deltaTime);
-
-		draw(time, deltaTime);
-
-		mWind->display();
-	}
-}
-
-void Bitchcraft::Game::draw(float gameTime, float deltaTime)
+void BtZS::draw(float gameTime, float deltaTime)
 {
 	if (health > 0)
 	{
@@ -127,6 +73,41 @@ void Bitchcraft::Game::draw(float gameTime, float deltaTime)
 			tc3.translate((*i).pos.x - 2.5, (*i).pos.y - 2.5);
 
 			mWind->draw(c3, tc3);
+		}
+
+		for (std::vector<drop>::iterator i = dr.begin(); i != dr.end(); i++)
+		{
+			sf::Transform t;
+			t.translate((*i).pos.x - 2.5, (*i).pos.y - 2.5);
+			t.rotate((*i).age * 45, 0, 0);
+
+			sf::RectangleShape r0(sf::Vector2f(20, 20));
+			r0.setFillColor(sf::Color::White);
+			r0.setOutlineColor(sf::Color::Blue);
+			r0.setOutlineThickness(2);
+
+			sf::Transform tr0(t);
+			tr0.translate(-10, -10);
+
+			mWind->draw(r0, tr0);
+
+			sf::RectangleShape r1(sf::Vector2f(5, 15));
+			r1.setFillColor(sf::Color::Red);
+			r1.setOutlineThickness(0);
+
+			sf::Transform tr1(t);
+			tr1.translate(-2.5, -7.5);
+
+			mWind->draw(r1, tr1);
+
+			sf::RectangleShape r2(sf::Vector2f(15, 5));
+			r2.setFillColor(sf::Color::Red);
+			r2.setOutlineThickness(0);
+
+			sf::Transform tr2(t);
+			tr2.translate(-7.5, -2.5);
+
+			mWind->draw(r2, tr2);
 		}
 
 		sf::RectangleShape r(sf::Vector2f(100, 26));
@@ -189,7 +170,16 @@ void Bitchcraft::Game::draw(float gameTime, float deltaTime)
 		mWind->draw(text1, t1);
 	}
 
-	sf::Text text1("v0.1a", font);
+	if ((gameTime - otf) > 0.1)
+	{
+		fps = 1 / (deltaTime == 0 ? 1 : deltaTime);
+		otf = gameTime;
+	}
+
+	char tmp[32];
+	sprintf(tmp, "fps: %04.0f v0.1a\n", fps);
+
+	sf::Text text1(tmp, font);
 	text1.setCharacterSize(12);
 	text1.setStyle(sf::Text::Bold);
 	text1.setColor(sf::Color::Red);
@@ -201,23 +191,27 @@ void Bitchcraft::Game::draw(float gameTime, float deltaTime)
 	mWind->draw(text1, t1);
 }
 
-float ot = 0;
+float otp = 0;
+float otd = 0;
+float ote = 0;
 
-void Bitchcraft::Game::update(float gameTime, float deltaTime)
+float otdm = 0;
+
+void BtZS::update(float gameTime, float deltaTime)
 {
 	if (health > 0)
 	{
 		crot = atan2f(mPos.y - tPos.y, mPos.x - tPos.x) * 180 / (M_PI);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-			tPos.x -= 40 * deltaTime;
+			tPos.x -= 60 * deltaTime;
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-			tPos.x += 40 * deltaTime;
+			tPos.x += 60 * deltaTime;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-			tPos.y -= 40 * deltaTime;
+			tPos.y -= 60 * deltaTime;
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-			tPos.y += 40 * deltaTime;
+			tPos.y += 60 * deltaTime;
 
 		if (tPos.x > 620)
 			tPos.x = 620;
@@ -231,10 +225,10 @@ void Bitchcraft::Game::update(float gameTime, float deltaTime)
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 		{
-			if ((gameTime - ot) > 0.25)
+			if ((gameTime - otp) > 0.25)
 			{
 				pr.push_back(proj::create(tPos.x, tPos.y, 120 * cos(crot * M_PI / 180), 120 * sin(crot * M_PI / 180)));
-				ot = gameTime;
+				otp = gameTime;
 			}
 		}
 
@@ -244,8 +238,13 @@ void Bitchcraft::Game::update(float gameTime, float deltaTime)
 //			printf("%f\n", dist);
 			if (dist < 15)
 			{
-				i = en.erase(i);
-				damage();
+//				i = en.erase(i);
+				if ((gameTime - otdm) > 0.5)
+				{
+					damage(-5.0);
+					otdm = gameTime;
+				}
+				i++;
 			}
 			else
 			{	
@@ -271,7 +270,7 @@ void Bitchcraft::Game::update(float gameTime, float deltaTime)
 					if (dist < 10)
 					{
 						er = true;
-						score();
+						score(10);
 						j = en.erase(j);
 					}
 					else
@@ -289,41 +288,80 @@ void Bitchcraft::Game::update(float gameTime, float deltaTime)
 			}
 		}
 
-		if ((rand() % 1000) >= 999 && en.size() < 100)
+		for (std::vector<drop>::iterator i = dr.begin(); i != dr.end();)
 		{
-			int r = rand() % 4;
-			sf::Vector2f pos;
-			if (r == 0)
+			if ((*i).age > 60)
 			{
-				pos.x = 0;
-				pos.y = rand() % 480;
+				i = dr.erase(i);
 			}
-			else if (r == 1)
+			else
 			{
-				pos.x = rand() % 640;
-				pos.y = 0;
+				float dist = sqrtf(powf((*i).pos.x - tPos.x, 2) + powf((*i).pos.y - tPos.y, 2));
+				if (dist < 30)
+				{
+					i = dr.erase(i);
+					damage(10.0);
+				}
+				else
+				{
+					(*i).age += deltaTime;
+					i++;
+				}
 			}
-			else if (r == 2)
+		}
+
+		if ((gameTime - otd) > 5)
+		{
+			if ((rand() % 1000) >= 999 && dr.size() < 100)
 			{
-				pos.x = 640;
-				pos.y = rand() % 480;
+				dr.push_back(drop::create((rand() % 600) + 20, (rand() % 440) + 20));
+				otd = gameTime;
 			}
-			else if (r == 3)
+		}
+
+		if ((gameTime - ote) > 0.5)
+		{
+			if ((rand() % 1000) >= 999 && en.size() < 100)
 			{
-				pos.x = rand() % 640;
-				pos.y = 480;
+				int r = rand() % 4;
+				sf::Vector2f pos;
+				if (r == 0)
+				{
+					pos.x = 0;
+					pos.y = rand() % 480;
+				}
+				else if (r == 1)
+				{
+					pos.x = rand() % 640;
+					pos.y = 0;
+				}
+				else if (r == 2)
+				{
+					pos.x = 640;
+					pos.y = rand() % 480;
+				}
+				else if (r == 3)
+				{
+					pos.x = rand() % 640;
+					pos.y = 480;
+				}
+				en.push_back(pos);
+				ote = gameTime;
 			}
-			en.push_back(pos);
 		}
 	}
 }
 
-void Bitchcraft::Game::damage()
+void BtZS::damage(float h)
 {
-	health -= 5.0;
+	health += h;
+	if (health < 0)
+		health = 0;
+	else if (health > 100)
+		health = 100;
 }
 
-void Bitchcraft::Game::score()
+void BtZS::score(int p)
 {
-	points += 10;
+	points += p;
 }
