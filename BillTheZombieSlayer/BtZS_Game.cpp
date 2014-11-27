@@ -177,7 +177,7 @@ void BtZS::draw(float gameTime, float deltaTime)
 	}
 
 	char tmp[32];
-	sprintf(tmp, "fps: %04.0f v0.1a\n", fps);
+	sprintf(tmp, "fps: %04.0f v0.1.0a\n", fps);
 
 	sf::Text text1(tmp, font);
 	text1.setCharacterSize(12);
