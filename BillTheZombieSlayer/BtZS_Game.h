@@ -2,6 +2,7 @@
 #define BtZS_BtZS_GAME_inc
 
 #include <Game.h>
+#include <QuadTree.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -69,6 +70,8 @@ private:
 	std::vector<sf::Vector2f> en;
 	std::vector<proj> pr;
 	std::vector<drop> dr;
+
+//	Bitchcraft::QuadTree scene;
 };
 
 #endif //BtZS_BtZS_GAME_inc

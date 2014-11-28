@@ -41,6 +41,7 @@ namespace Bitchcraft
 
 		float health;
 		int points;
+
 	};
 }
 
