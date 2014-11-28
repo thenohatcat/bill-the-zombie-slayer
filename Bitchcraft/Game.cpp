@@ -17,8 +17,8 @@ Bitchcraft::Game::Game(const char *title, int width, int height)
 	sf::ContextSettings cx;
 	cx.antialiasingLevel = 8;
 
-	int mHeight = 480;
-	int mWidth = 640;
+	int mHeight = height;
+	int mWidth = width;
 	std::string mTitle(title);
 
 	health = 100;

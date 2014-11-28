@@ -15,6 +15,7 @@ namespace Bitchcraft
 	{
 	public:
 		DllExport QuadTree(QuadTree *parent, QuadTree *ur, QuadTree *ul, QuadTree *ll, QuadTree *lr);
+		DllExport ~QuadTree();
 
 		DllExport static QuadTree* generate(int levels);
 
@@ -33,13 +34,14 @@ namespace Bitchcraft
 		QuadTree *subTree2; //LowerLeft
 		QuadTree *subTree3; //LowerRight
 
-		std::list<TreeNode*> nodes;
+		std::vector<TreeNode*> nodes;
 	};
 
 	class TreeNode
 	{
 	public:
 		DllExport TreeNode(sf::Rect<float> b);
+		DllExport ~TreeNode();
 
 		void (*collide)(TreeNode *n);
 

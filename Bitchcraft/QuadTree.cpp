@@ -5,6 +5,14 @@ Bitchcraft::QuadTree::QuadTree(QuadTree *p, QuadTree *ur, QuadTree *ul, QuadTree
 	: parent(p), subTree0(ur), subTree1(ul), subTree2(ll), subTree3(lr)
 { }
 
+Bitchcraft::QuadTree::~QuadTree()
+{
+	delete subTree0;
+	delete subTree1;
+	delete subTree2;
+	delete subTree3;
+}
+
 Bitchcraft::QuadTree* Bitchcraft::QuadTree::generate(int levels)
 {
 	if (levels > 0)
@@ -42,13 +50,14 @@ void Bitchcraft::QuadTree::insert(TreeNode *n, float x, float y, float w, float 
 void Bitchcraft::QuadTree::collide(QuadTree *t, TreeNode *n, float x, float y, float w, float h)
 {
 	if (t->subTree0 == NULL) //Is leaf
-		for (std::list<TreeNode*>::iterator i = t->nodes.begin(); i != t->nodes.end(); i++)
+		//for (std::list<TreeNode*>::iterator i = t->nodes.begin(); i != t->nodes.end(); i++)
+		for (int i = 0; i < t->nodes.size(); i++)
 		{
-			if (!(*i)->visited)
-				if (n->bound.intersects((*i)->bound))
+			if (t->nodes.at(i)->visited)
+				if (n->bound.intersects(t->nodes.at(i)->bound))
 				{
-					n->collide(*i);
-					(*i)->visited = true;
+					n->collide(t->nodes.at(i));
+					t->nodes.at(i)->visited = true;
 				}
 		}
 	else
@@ -80,9 +89,10 @@ void Bitchcraft::QuadTree::clear()
 void Bitchcraft::QuadTree::collide_clear()
 {
 	if (subTree0 == NULL) //Is Leaf
-		for (std::list<TreeNode*>::iterator i = nodes.begin(); i != nodes.end(); i++)
+		//for (std::list<TreeNode*>::iterator i = nodes.begin(); i != nodes.end(); i++)
+		for (int i = 0; i < nodes.size(); i++)
 		{
-			(*i)->visited = false;
+			nodes.at(i)->visited = false;
 		}
 	else
 	{
@@ -96,3 +106,8 @@ void Bitchcraft::QuadTree::collide_clear()
 Bitchcraft::TreeNode::TreeNode(sf::Rect<float> b)
 	:	bound(b), visited(false)
 { }
+
+Bitchcraft::TreeNode::~TreeNode()
+{
+//	delete content;
+}

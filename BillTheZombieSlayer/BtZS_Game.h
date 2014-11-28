@@ -12,7 +12,7 @@ class BtZS
 	:	public Bitchcraft::Game
 {
 public:
-	BtZS(const char *title, int width = 640, int height = 480)
+	BtZS(const char *title, int width = 1024, int height = 768)
 		: Bitchcraft::Game(title, width, height)
 	{ }
 
